@@ -149,15 +149,18 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-
-                {/* Right Panel - Charts (4 Cols) */}
-                <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
-                    <CyberCard title="HEALTH FORECAST" className="flex-1 min-h-[200px]">
-                        {forecast && <HealthTrendChart data={forecast.chartData} />}
-                    </CyberCard>
-                    <CyberCard title="YIELD PROJECTION" className="flex-1 min-h-[200px]">
-                        {forecast && <YieldProjectionsChart data={forecast.yieldData} />}
-                    </CyberCard>
+                {/* AI CHARTS */}
+                <div className="col-span-12 lg:col-span-4 grid grid-rows-2 gap-4">
+                    <div className="bg-farm-card border border-white/5 rounded-2xl p-4">
+                        <div className="h-[180px] w-full">
+                            {forecast && <HealthTrendChart data={forecast.chartData} />}
+                        </div>
+                    </div>
+                    <div className="bg-farm-card border border-white/5 rounded-2xl p-4">
+                        <div className="h-[180px] w-full">
+                            {forecast && <YieldProjectionsChart data={forecast.yieldData} />}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
