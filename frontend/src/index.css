@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0B0F19;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+  color: #F1F5F9;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-farm-card backdrop-blur-md border border-slate-700/50 shadow-xl;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-farm-green/50 hover:shadow-lg hover:shadow-farm-green/10;
+  }
+
+  .clip-path-cyber {
+    clip-path: polygon(0 0,
+        100% 0,
+        100% calc(100% - 20px),
+        calc(100% - 20px) 100%,
+        0 100%);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

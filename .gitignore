@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+backend/venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Whitelist Data for Deployment (Keep these!)
+!backend/data/farm_data.db
+!backend/data/best_model.pth
