@@ -17,10 +17,10 @@ class ForecastResponse(BaseModel):
 
 @router.get("/forecast", response_model=ForecastResponse)
 def get_forecast(months: int = 6):
-    df = db.get_all_surveys_df()
-    
     # Wrap in try-except to prevent 500 crash
     try:
+        df = db.get_all_surveys_df()
+        
         # Check data sufficiency
         if len(df) < 2:
             return ForecastResponse(

@@ -12,7 +12,7 @@ def send_telegram_alert(message: str, image_path: str = None):
     """
     if not TG_TOKEN or not TG_CHAT_ID:
         print("Telegram Config Missing")
-        return False
+        return False, "Missing Config"
 
     base_url = f"https://api.telegram.org/bot{TG_TOKEN}"
     
@@ -28,7 +28,7 @@ def send_telegram_alert(message: str, image_path: str = None):
                 data = {'chat_id': TG_CHAT_ID}
                 requests.post(f"{base_url}/sendPhoto", data=data, files=files)
                 
-        return True
+        return True, "Message sent successfully"
     except Exception as e:
         print(f"Telegram Notification Failed: {e}")
-        return False
+        return False, f"Error: {str(e)}"

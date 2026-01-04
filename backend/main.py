@@ -35,8 +35,8 @@ def health_check():
 @app.get("/debug/notification")
 def debug_notification():
     from core import notifications
-    success = notifications.send_telegram_alert("🔔 Debug Test Message from Backend Server")
-    return {"status": "sent" if success else "failed", "backend_message": "Attempted to send telegram msg"}
+    success, msg = notifications.send_telegram_alert("🔔 Debug Test Message from Backend Server")
+    return {"status": "sent" if success else "failed", "backend_message": msg}
 
 if __name__ == "__main__":
     import uvicorn
