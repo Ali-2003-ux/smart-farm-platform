@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import inference, drone, analytics
+from api import inference, drone, analytics, export, vra, audit
 
 app = FastAPI(
     title="Smart Farm Enterprise API",
@@ -20,9 +20,13 @@ app.add_middleware(
 )
 
 # --- Routes ---
-app.include_router(inference.router, prefix="/api/v1/ai", tags=["AI Inference"])
+app.include_router(inference.router, prefix="/api/v1/inference", tags=["Inference"])
 app.include_router(drone.router, prefix="/api/v1/drone", tags=["Drone Operations"])
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Data Science"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
+app.include_router(export.router, prefix="/api/v1/export", tags=["Mission Export"])
+app.include_router(export.router, prefix="/api/v1/export", tags=["Mission Export"])
+app.include_router(vra.router, prefix="/api/v1/vra", tags=["Precision Ag"])
+app.include_router(audit.router, prefix="/api/v1/audit", tags=["Compliance"])
 
 @app.get("/")
 def read_root():
