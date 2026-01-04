@@ -199,8 +199,79 @@ def get_forecast(months: int = 6):
             print(f"Date Parsing Warning: {e}")
             pass
             
-        df = df.dropna(subset=['scan_date']).sort_values('scan_date')
+# --- NEW ENTERPRISE ENDPOINTS (v3.0) ---
+
+@router.get("/reports/history")
+def get_reports_history():
+    """Fetch all historical scans for the Reports Table."""
+    try:
+        df = db.get_all_surveys_df()
+        if df.empty:
+            return []
         
+        # Format for frontend table
+        # We aggregate by Scan Date
+        history = []
+        for date, group in df.groupby('scan_date'):
+            history.append({
+                "id": str(date)[:10], # Use date as ID for simplicity or generate UUID
+                "date": str(date)[:10],
+                "sector": "Sector A (Main)", # Placeholder until multi-sector
+                "palms_scanned": int(len(group)),
+                "issues_found": int(group[group['health_score'] < 50].shape[0]),
+                "status": "Verified"
+            })
+        return history
+    except Exception as e:
+        print(f"History Error: {e}")
+        return []
+
+@router.get("/finance/roi")
+def get_roi_metrics():
+    """Calculate Real-Time Financial ROI."""
+    try:
+        df = db.get_all_surveys_df()
+        # Mocking config for now, in future fetch from DB
+        oil_price_per_ton = 950.0  # $
+        cost_per_palm = 12.0       # $
+        
+        total_palms = len(df)
+        if total_palms == 0:
+            return {"revenue": 0, "expenses": 0, "profit": 0, "roi": 0}
+            
+        avg_health = df['avg_health'].mean() if not df.empty else 0
+        est_tonnage = (total_palms * (avg_health/100) * 0.150) # 150kg per healthy tree
+        
+        revenue = est_tonnage * oil_price_per_ton
+        expenses = total_palms * cost_per_palm
+        profit = revenue - expenses
+        roi = (profit / expenses) * 100 if expenses > 0 else 0
+        
+        return {
+            "revenue": round(revenue, 2),
+            "expenses": round(expenses, 2),
+            "profit": round(profit, 2),
+            "roi": round(roi, 1),
+            "est_yield": round(est_tonnage, 2)
+        }
+    except Exception as e:
+        print(f"ROI Error: {e}")
+        return {"revenue": 0, "expenses": 0, "profit": 0, "roi": 0}
+
+@router.post("/tasks/dispatch")
+def dispatch_task(task: TaskCreate):
+    """Auto-Dispatch Logic"""
+    conn = db.get_db_connection()
+    try:
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO tasks (palm_id, task_type, priority, status, assigned_to, due_date)
+            VALUES (?, ?, ?, 'Pending', 'Auto-Bot', DATE('now', '+3 days'))
+        """, (task.target_palm_id, task.task_type, task.priority))
+        conn.commit()
+        return {"status": "dispatched", "task_id": c.lastrowid}
+    finally:
+        conn.close()        
         if df.empty:
              return ForecastResponse(dates=[], health_values=[], yield_values=[], trend="Date Error", message="Invalid Dates")
 
