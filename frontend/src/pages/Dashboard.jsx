@@ -5,8 +5,9 @@ import { CyberCard } from '../components/CyberCard';
 import { HealthTrendChart, YieldProjectionsChart } from '../components/Charts';
 
 // Configure Axios base URL
+const PROD_URL = 'https://ifa78058-smart-farm-backend.hf.space/api/v1';
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+    baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_URL : 'http://localhost:8000/api/v1')
 });
 
 export default function Dashboard() {

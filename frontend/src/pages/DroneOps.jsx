@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Upload, Plane, MapPin, Download, CheckCircle, AlertOctagon } from 'lucide-react';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1' });
+const PROD_URL = 'https://ifa78058-smart-farm-backend.hf.space/api/v1';
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PROD_URL : 'http://localhost:8000/api/v1') });
 
 export default function DroneOps() {
     const [file, setFile] = useState(null);
