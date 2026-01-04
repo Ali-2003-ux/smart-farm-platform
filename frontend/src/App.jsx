@@ -35,7 +35,10 @@ function App() {
             </div>
 
             {/* Sidebar */}
-            <aside className={`relative z - 20 bg - farm - card / 80 backdrop - blur - xl border - r border - white / 5 flex flex - col transition - all duration - 300 ${isSidebarOpen ? 'w-72' : 'w-20'} `}>
+            <aside
+                onMouseEnter={() => setIsSidebarOpen(true)}
+                onMouseLeave={() => setIsSidebarOpen(false)}
+                className={`relative z-20 bg-farm-card/80 backdrop-blur-xl border-r border-white/5 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-72' : 'w-20'} `}>
                 <div className="p-6 border-b border-white/5 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-farm-green to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                         <ScanLine className="text-white" size={24} />
