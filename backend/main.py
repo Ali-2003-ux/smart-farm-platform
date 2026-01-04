@@ -24,7 +24,7 @@ app.include_router(inference.router, prefix="/api/v1/inference", tags=["Inferenc
 app.include_router(drone.router, prefix="/api/v1/drone", tags=["Drone Operations"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
 app.include_router(export.router, prefix="/api/v1/export", tags=["Mission Export"])
-app.include_router(export.router, prefix="/api/v1/export", tags=["Mission Export"])
+
 app.include_router(vra.router, prefix="/api/v1/vra", tags=["Precision Ag"])
 app.include_router(audit.router, prefix="/api/v1/audit", tags=["Compliance"])
 

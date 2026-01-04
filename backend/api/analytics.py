@@ -192,9 +192,11 @@ def get_forecast(months: int = 6):
 
         # Robust Date Parsing
         try:
-            # Try parsing with time, fallback to date only if needed
+            # Ensure string format and truncate time component (YYYY-MM-DD)
+            df['scan_date'] = df['scan_date'].astype(str).str[:10]
             df['scan_date'] = pd.to_datetime(df['scan_date'], errors='coerce')
-        except Exception:
+        except Exception as e:
+            print(f"Date Parsing Warning: {e}")
             pass
             
         df = df.dropna(subset=['scan_date']).sort_values('scan_date')
