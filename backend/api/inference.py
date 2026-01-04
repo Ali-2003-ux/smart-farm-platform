@@ -159,10 +159,16 @@ async def predict_segmentation(file: UploadFile = File(...)):
         if survey_id:
             print(f"Scan {survey_id} saved successfully.")
             
-            # TRIGGER NOTIFICATION
-            if infected_count > 0:
-                msg = f"⚠️ Drone Patrol Alert: {infected_count} infected palms detected in latest scan (ID: {survey_id})."
-                notifications.send_telegram_alert(msg)
+            # TRIGGER NOTIFICATION ALWAYS (For Verification)
+            status_emoji = "✅" if infected_count == 0 else "⚠️"
+            status_text = "All Clear" if infected_count == 0 else f"{infected_count} Infected Palms Detected"
+            
+            msg = (
+                f"{status_emoji} Drone Patrol Report (Scan #{survey_id})\n"
+                f"Trees: {len(candidates)}\n"
+                f"Status: {status_text}"
+            )
+            notifications.send_telegram_alert(msg)
     except Exception as e:
         print(f"❌ Failed to save scan results: {e}")
 
