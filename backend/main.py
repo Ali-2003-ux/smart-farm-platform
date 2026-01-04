@@ -32,6 +32,12 @@ def read_root():
 def health_check():
     return {"status": "healthy", "service": "api"}
 
+@app.get("/debug/notification")
+def debug_notification():
+    from core import notifications
+    success = notifications.send_telegram_alert("🔔 Debug Test Message from Backend Server")
+    return {"status": "sent" if success else "failed", "backend_message": "Attempted to send telegram msg"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
