@@ -9,12 +9,7 @@ app = FastAPI(
 )
 
 # --- CORS Configuration ---
-origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://smart-farm-platform.vercel.app",
-    "https://huggingface.co",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
