@@ -23,14 +23,14 @@ def send_telegram_alert(message: str, image_path: str = None):
     try:
         # Send Text
         payload = {"chat_id": TG_CHAT_ID, "text": message}
-        requests.post(f"{base_url}/sendMessage", json=payload, headers=headers, verify=False)
+        requests.post(f"{base_url}/sendMessage", json=payload, headers=headers, verify=False, timeout=5)
         
         # Send Image if provided
         if image_path and os.path.exists(image_path):
             with open(image_path, 'rb') as img_file:
                 files = {'photo': img_file}
                 data = {'chat_id': TG_CHAT_ID}
-                requests.post(f"{base_url}/sendPhoto", data=data, files=files, headers=headers, verify=False)
+                requests.post(f"{base_url}/sendPhoto", data=data, files=files, headers=headers, verify=False, timeout=10)
                 
         return True, "Message sent successfully"
     except Exception as e:
