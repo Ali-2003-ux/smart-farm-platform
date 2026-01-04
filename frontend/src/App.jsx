@@ -121,7 +121,7 @@ function App() {
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span className="text-xs font-medium text-emerald-400">CLOUD - ENTERPRISE v3.0</span>
+                            <span className="text-xs font-medium text-emerald-400">CLOUD - ENTERPRISE v3.1</span>
                         </div>
                         <button className="relative p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors">
                             <Bell size={20} />

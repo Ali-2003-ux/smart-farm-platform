@@ -12,7 +12,7 @@ export const HealthTrendChart = ({ data }) => {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
             <XAxis dataKey="date" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-            <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} domain={[60, 100]} />
+            <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} domain={[0, 100]} />
             <Tooltip
                 contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', color: '#f1f5f9' }}
                 itemStyle={{ color: '#10B981' }}
