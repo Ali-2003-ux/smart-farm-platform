@@ -1,10 +1,7 @@
-
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import { Pipette, Save, Activity } from 'lucide-react';
 import { CyberCard } from '../components/CyberCard';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1' });
 
 export default function PrecisionAg() {
     const [config, setConfig] = useState({

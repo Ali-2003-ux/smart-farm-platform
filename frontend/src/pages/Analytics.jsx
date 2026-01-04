@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -22,8 +22,6 @@ ChartJS.register(
     Tooltip,
     Legend
 );
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1' });
 
 export default function Analytics() {
     const [data, setData] = useState(null);

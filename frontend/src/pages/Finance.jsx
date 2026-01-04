@@ -1,10 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import { DollarSign, Droplets, Leaf } from 'lucide-react';
 import { CyberCard } from '../components/CyberCard';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1' });
 
 export default function Finance() {
     const [metrics, setMetrics] = useState(null);

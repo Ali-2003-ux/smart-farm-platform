@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import { Calendar, FileText, ChevronRight, Activity, Download, Plane } from 'lucide-react';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1' });
 
 export default function Reports() {
     const [reports, setReports] = useState([]);
