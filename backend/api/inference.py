@@ -7,8 +7,9 @@ from albumentations.pytorch import ToTensorV2
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 import os
+import pandas as pd
 import base64
-from core import db
+from core import db, notifications
 
 router = APIRouter()
 
@@ -154,7 +155,14 @@ async def predict_segmentation(file: UploadFile = File(...)):
                 'area': area_px,
                 'health_score': c['exg']
             })
-        db.save_scan_results(len(candidates), float(avg_h), palm_records)
+        survey_id = db.save_scan_results(len(candidates), float(avg_h), palm_records)
+        if survey_id:
+            print(f"Scan {survey_id} saved successfully.")
+            
+            # TRIGGER NOTIFICATION
+            if infected_count > 0:
+                msg = f"⚠️ Drone Patrol Alert: {infected_count} infected palms detected in latest scan (ID: {survey_id})."
+                notifications.send_telegram_alert(msg)
     except Exception as e:
         print(f"❌ Failed to save scan results: {e}")
 
