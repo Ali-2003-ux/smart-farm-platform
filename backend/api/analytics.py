@@ -19,55 +19,65 @@ class ForecastResponse(BaseModel):
 def get_forecast(months: int = 6):
     df = db.get_all_surveys_df()
     
-    if len(df) < 2:
+    # Wrap in try-except to prevent 500 crash
+    try:
+        # Check data sufficiency
+        if len(df) < 2:
+            return ForecastResponse(
+                dates=[], health_values=[], yield_values=[],
+                trend="Insufficient Data",
+                message="Need at least 2 scans to forecast."
+            )
+            
+        # Logic reuse
+        df['date_ordinal'] = pd.to_datetime(df['scan_date']).apply(lambda x: x.toordinal())
+        
+        X = df[['date_ordinal']]
+        y = df['avg_health']
+        
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        last_date = pd.to_datetime(df['scan_date'].max())
+        future_dates = []
+        future_ordinals = []
+        
+        for i in range(1, months + 1):
+            next_d = last_date + pd.Timedelta(days=30 * i)
+            future_dates.append(next_d.strftime("%Y-%m-%d"))
+            future_ordinals.append([next_d.toordinal()])
+            
+        pred_health = model.predict(future_ordinals)
+        
+        # Yield Logic (simplified)
+        # Using last known total palms count
+        current_count = df['total_palms'].iloc[-1] if not df.empty else 0
+        yield_vals = []
+        
+        for h in pred_health:
+            h_clamped = max(0, min(100, float(h)))
+            y_tons = (current_count * (h_clamped / 100.0) * 80) / 1000.0
+            yield_vals.append(round(y_tons, 2))
+
+        slope = model.coef_[0]
+        trend = "Stable"
+        if slope > 0.05: trend = "Improving"
+        elif slope < -0.05: trend = "Declining"
+        
+        return ForecastResponse(
+            dates=future_dates,
+            health_values=[round(float(h), 1) for h in pred_health],
+            yield_values=yield_vals,
+            trend=trend,
+            message="Success"
+        )
+    except Exception as e:
+        print(f"Forecast Error: {e}")
         return ForecastResponse(
             dates=[], health_values=[], yield_values=[],
-            trend="Insufficient Data",
-            message="Need at least 2 scans to forecast."
+            trend="Error",
+            message=f"Forecasting Failed: {str(e)}"
         )
-        
-    # Logic reuse
-    df['date_ordinal'] = pd.to_datetime(df['scan_date']).apply(lambda x: x.toordinal())
-    
-    X = df[['date_ordinal']]
-    y = df['avg_health']
-    
-    model = LinearRegression()
-    model.fit(X, y)
-    
-    last_date = pd.to_datetime(df['scan_date'].max())
-    future_dates = []
-    future_ordinals = []
-    
-    for i in range(1, months + 1):
-        next_d = last_date + pd.Timedelta(days=30 * i)
-        future_dates.append(next_d.strftime("%Y-%m-%d"))
-        future_ordinals.append([next_d.toordinal()])
-        
-    pred_health = model.predict(future_ordinals)
-    
-    # Yield Logic (simplified)
-    # Using last known total palms count
-    current_count = df['total_palms'].iloc[-1] if not df.empty else 0
-    yield_vals = []
-    
-    for h in pred_health:
-        h_clamped = max(0, min(100, float(h)))
-        y_tons = (current_count * (h_clamped / 100.0) * 80) / 1000.0
-        yield_vals.append(round(y_tons, 2))
-
-    slope = model.coef_[0]
-    trend = "Stable"
-    if slope > 0.05: trend = "Improving"
-    elif slope < -0.05: trend = "Declining"
-    
-    return ForecastResponse(
-        dates=future_dates,
-        health_values=[round(float(h), 1) for h in pred_health],
-        yield_values=yield_vals,
-        trend=trend,
-        message="Success"
-    )
 
 class StatsResponse(BaseModel):
     total_palms: int
