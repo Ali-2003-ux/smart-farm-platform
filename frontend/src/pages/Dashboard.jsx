@@ -53,6 +53,23 @@ export default function Dashboard() {
             <h3 className="text-xl font-bold mb-2">Connection Error</h3>
             <p>Could not connect to Field Server.</p>
             <p className="text-xs font-mono mt-2 text-gray-400">Target: {api.defaults.baseURL}</p>
+            {/* DEBUGGER */}
+            <div className="p-4 bg-red-900/20 border border-red-500/30 rounded mt-8">
+                <h3 className="text-red-400 font-bold mb-2">🔧 SYSTEM DIAGNOSTICS</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs font-mono text-gray-300">
+                    <div>
+                        <strong>API URL:</strong> {api.defaults.baseURL}<br />
+                        <strong>Forecast Status:</strong> {loading ? "Loading..." : (forecast ? "Loaded" : "No Data")}<br />
+                        <strong>Widgets data:</strong> {stats ? "OK" : "NULL"}
+                    </div>
+                    <div className="overflow-auto max-h-32 bg-black/50 p-2 rounded">
+                        <strong>Raw Forecast:</strong><br />
+                        {JSON.stringify(forecast?.chartData || "None", null, 2)}
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-20"></div> {/* Spacer */}
         </div>
     );
 
