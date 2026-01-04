@@ -2,6 +2,14 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 export const HealthTrendChart = ({ data }) => {
+    if (!data || data.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full text-xs text-gray-500 font-mono">
+                [NO HEALTH DATA AVAILABLE]
+            </div>
+        );
+    }
+    console.log("Rendering HealthChart with:", data.length, "points");
     return (
         <AreaChart width={450} height={180} data={data}>
             <defs>
