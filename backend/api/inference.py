@@ -8,6 +8,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 import os
 import base64
+from core import db
 
 router = APIRouter()
 
@@ -141,6 +142,22 @@ async def predict_segmentation(file: UploadFile = File(...)):
         
     avg_h = (total_health / len(candidates)) if candidates else 0
     
+    # --- SAVE TO DB ---
+    try:
+        palm_records = []
+        for c in candidates:
+            # Re-calculate area safe or usage
+            area_px = cv2.contourArea(c['cnt'])
+            palm_records.append({
+                'x': c['c'][0],
+                'y': c['c'][1],
+                'area': area_px,
+                'health_score': c['exg']
+            })
+        db.save_scan_results(len(candidates), float(avg_h), palm_records)
+    except Exception as e:
+        print(f"❌ Failed to save scan results: {e}")
+
     # Encode Images
     _, buffer_img = cv2.imencode('.jpg', cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR))
     img_b64 = base64.b64encode(buffer_img).decode('utf-8')

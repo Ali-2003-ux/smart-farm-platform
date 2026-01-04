@@ -15,6 +15,9 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // DEBUG: Log the API URL being used
+        console.log("Using API URL:", api.defaults.baseURL);
+
         const fetchData = async () => {
             try {
                 const [statsRes, forecastRes] = await Promise.all([
@@ -39,6 +42,7 @@ export default function Dashboard() {
             } catch (err) {
                 console.error("API Error", err);
                 setLoading(false);
+                // We keep stats null so UI shows error state
             }
         };
         fetchData();
@@ -47,7 +51,15 @@ export default function Dashboard() {
         return () => clearInterval(interval);
     }, []);
 
-    if (loading || !stats) return <div className="p-10 text-farm-green animate-pulse">Initializing Command Center...</div>;
+    if (loading) return <div className="p-10 text-farm-green animate-pulse">Initializing Command Center...</div>;
+
+    if (!stats) return (
+        <div className="p-10 text-red-500 border border-red-500/30 bg-red-500/10 rounded-xl">
+            <h3 className="text-xl font-bold mb-2">Connection Error</h3>
+            <p>Could not connect to Field Server.</p>
+            <p className="text-xs font-mono mt-2 text-gray-400">Target: {api.defaults.baseURL}</p>
+        </div>
+    );
 
     return (
         <div className="space-y-6 h-full flex flex-col">

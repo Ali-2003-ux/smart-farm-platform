@@ -12,6 +12,8 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://smart-farm-platform.vercel.app",
+    "https://huggingface.co",
 ]
 
 app.add_middleware(
