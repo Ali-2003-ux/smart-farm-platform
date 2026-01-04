@@ -168,15 +168,26 @@ def get_forecast(months: int = 6):
         if len(df) < 2:
             return ForecastResponse(
                 dates=[], health_values=[], yield_values=[],
-                trend="Insufficient Data",
-                message="Need at least 2 scans to forecast."
+                trend="Insufficient Data (Min 2 Scans)",
+                message="Need more history"
             )
+
+        # Robust Date Parsing
+        try:
+            # Try parsing with time, fallback to date only if needed
+            df['scan_date'] = pd.to_datetime(df['scan_date'], errors='coerce')
+        except Exception:
+            pass
             
-        # Logic reuse
-        df['date_ordinal'] = pd.to_datetime(df['scan_date']).apply(lambda x: x.toordinal())
+        df = df.dropna(subset=['scan_date']).sort_values('scan_date')
         
-        X = df[['date_ordinal']]
-        y = df['avg_health']
+        if df.empty:
+             return ForecastResponse(dates=[], health_values=[], yield_values=[], trend="Date Error", message="Invalid Dates")
+
+        df['ordinal'] = df['scan_date'].map(pd.Timestamp.toordinal)
+        
+        X = df[['ordinal']].values
+        y = df['avg_health'].values
         
         model = LinearRegression()
         model.fit(X, y)
