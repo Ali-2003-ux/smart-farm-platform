@@ -166,10 +166,28 @@ def get_forecast(months: int = 6):
         
         # Check data sufficiency
         if len(df) < 2:
+            # Fallback: If only 1 scan exists, project a "Stable" trend (Flat Line)
+            # This ensures charts are never empty for new users.
+            latest = df.iloc[-1] if not df.empty else None
+            base_health = float(latest['avg_health']) if latest is not None else 50.0
+            
+            future_dates = []
+            last_date = pd.to_datetime(latest['scan_date']) if latest is not None else pd.Timestamp.now()
+            
+            for i in range(1, months + 1):
+                next_d = last_date + pd.Timedelta(days=30 * i)
+                future_dates.append(next_d.strftime("%Y-%m-%d"))
+            
+            # Yield calc for fallback
+            current_count = df['total_palms'].iloc[-1] if not df.empty else 0
+            yield_val = (current_count * (base_health / 100.0) * 80) / 1000.0
+            
             return ForecastResponse(
-                dates=[], health_values=[], yield_values=[],
-                trend="Insufficient Data (Min 2 Scans)",
-                message="Need more history"
+                dates=future_dates,
+                health_values=[base_health] * months,
+                yield_values=[round(yield_val, 2)] * months,
+                trend="Stable (Insufficient Data)",
+                message="Projecting current status"
             )
 
         # Robust Date Parsing
