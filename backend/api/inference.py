@@ -94,9 +94,9 @@ async def predict_segmentation(file: UploadFile = File(...)):
     # Let's resize back for precision if needed, but for web 512 is good.
     # We will return 512 for now.
     
-    # Counting Logic (Same as app.py)
-    mask_refined = (pr_mask > 0.65).astype(np.uint8) * 255
-    kernel = np.ones((5,5), np.uint8)
+    # Counting Logic (High Sensitivity)
+    mask_refined = (pr_mask > 0.40).astype(np.uint8) * 255
+    kernel = np.ones((3,3), np.uint8)
     mask_refined = cv2.morphologyEx(mask_refined, cv2.MORPH_OPEN, kernel, iterations=1)
     contours, _ = cv2.findContours(mask_refined, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -110,7 +110,7 @@ async def predict_segmentation(file: UploadFile = File(...)):
     # Pass 1
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area < 50: continue
+        if area < 15: continue # Lowered from 50 to 15 to catch small trees
         
         ((x,y), radius) = cv2.minEnclosingCircle(cnt)
         center = (int(x), int(y))
