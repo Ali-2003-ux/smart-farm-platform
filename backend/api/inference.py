@@ -94,11 +94,22 @@ async def predict_segmentation(file: UploadFile = File(...)):
     # Let's resize back for precision if needed, but for web 512 is good.
     # We will return 512 for now.
     
-    # Counting Logic (High Sensitivity)
+    # Counting Logic (Watershed / Distance Transform)
+    # 1. Refine mask
     mask_refined = (pr_mask > 0.40).astype(np.uint8) * 255
     kernel = np.ones((3,3), np.uint8)
-    mask_refined = cv2.morphologyEx(mask_refined, cv2.MORPH_OPEN, kernel, iterations=1)
-    contours, _ = cv2.findContours(mask_refined, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    mask_refined = cv2.morphologyEx(mask_refined, cv2.MORPH_OPEN, kernel, iterations=2)
+    
+    # 2. Distance Transform to find tree centers (separating touching trees)
+    dist_transform = cv2.distanceTransform(mask_refined, cv2.DIST_L2, 5)
+    
+    # 3. Threshold distance map to get sure foreground (the cores of the trees)
+    #    We use a low ratio (0.3) to ensure we don't miss small trees, but high enough to separate centers
+    _, sure_fg = cv2.threshold(dist_transform, 0.3 * dist_transform.max(), 255, 0)
+    sure_fg = np.uint8(sure_fg)
+    
+    # 4. Find contours on the SEPARATED cores, not the merged mask
+    contours, _ = cv2.findContours(sure_fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Health Analysis
     palm_data = []
