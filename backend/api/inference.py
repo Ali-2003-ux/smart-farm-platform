@@ -104,11 +104,11 @@ async def predict_segmentation(file: UploadFile = File(...)):
     dist_transform = cv2.distanceTransform(mask_refined, cv2.DIST_L2, 5)
     
     # 3. Threshold distance map to get sure foreground (the cores of the trees)
-    #    We use a low ratio (0.3) to ensure we don't miss small trees, but high enough to separate centers
-    _, sure_fg = cv2.threshold(dist_transform, 0.3 * dist_transform.max(), 255, 0)
+    #    ULTRA SENSITIVITY: 0.1 ratio to catch even faint centers
+    _, sure_fg = cv2.threshold(dist_transform, 0.1 * dist_transform.max(), 255, 0)
     sure_fg = np.uint8(sure_fg)
     
-    # 4. Find contours on the SEPARATED cores, not the merged mask
+    # 4. Find contours on the SEPARATED cores
     contours, _ = cv2.findContours(sure_fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Health Analysis
@@ -121,7 +121,7 @@ async def predict_segmentation(file: UploadFile = File(...)):
     # Pass 1
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area < 15: continue # Lowered from 50 to 15 to catch small trees
+        if area < 5: continue # Almost no filtering, accept everything
         
         ((x,y), radius) = cv2.minEnclosingCircle(cnt)
         center = (int(x), int(y))
